@@ -8,7 +8,7 @@ def route_video():
    video_links=get_links()
    return video_links
 
-@app.route('/text',methods=("GET"))
+@app.route('/text',methods=["GET"])
 def route_text():
    #TODO: Fetch url links from database
    url=get_articles()
