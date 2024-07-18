@@ -20,8 +20,20 @@ def route_posts():
       return posts
    elif request.method=='POST':
       text=request.form["text"]
-      posts=add_post(text)
-      return posts
+      response=add_post(text)
+      return response
+
+@app.route('/comments',methods=["POST","GET"])
+def route_comments():
+   if request.method=='GET':
+      post_id=request.args.get("post_id")
+      comments=get_all_comments(post_id)
+      return comments
+   elif request.method=='POST':
+      text=request.form["text"]
+      post_id=request.form["post_id"]
+      response=add_comment(text,post_id)
+      return response
 
 # @app.route("/signup",method=("POST"))
 # def route_signup():

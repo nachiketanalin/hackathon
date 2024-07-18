@@ -48,24 +48,34 @@ def get_all_posts():
 
 def add_post(text):
     try:
-        query=f"INSERT INTO POSTS (CONTENT,UPVOTE,DOWNVOTE) VALUES({text},0,0)"
+        query=f'''INSERT INTO POSTS (CONTENT,UPVOTE,DOWNVOTE) VALUES("{text}",0,0)'''
         ans=execute_query(query)
         return {"response":"Post added successfully"},200
     except Exception as e:
         return {"error":str(e)},400
 
-    
-def get_articles():
+def get_all_comments(post_id):
     try:
-        query = "SELECT * FROM ARTICLES"
+        query = f"SELECT * FROM COMMENTS where POST_ID={post_id}"
         ans_list= execute_query(query)
         response=[{
-            "title":row[0],
-            "id":row[1]
+            "comment_id":row[0],
+            "post_id":row[1],
+            "content":row[2],
+            "upvotes":row[3],
+            "downvotes":row[4]
         } for row in ans_list]
         return {"response":response},200
     except Exception as e:
          return {"error":str(e)},400
+
+def add_comment(text,post_id):
+    try:
+        query=f'''INSERT INTO COMMENTS (POST_ID,CONTENT,UPVOTE,DOWNVOTE) VALUES({post_id},"{text}",0,0)'''
+        ans=execute_query(query)
+        return {"response":"Comment added successfully"},200
+    except Exception as e:
+        return {"error":str(e)},400
       
     
 def execute_query(query):
