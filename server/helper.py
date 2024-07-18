@@ -21,8 +21,16 @@ def get_links():
 
     
 def get_articles():
-    query = "SELECT * FROM ARTICLES"
-    return execute_query(query)
+    try:
+        query = "SELECT * FROM ARTICLES"
+        ans_list= execute_query(query)
+        response=[{
+            "title":row[0],
+            "id":row[1]
+        } for row in ans_list]
+        return {"response":response},200
+    except Exception as e:
+         return {"error":str(e)},400
       
     
 def execute_query(query):
