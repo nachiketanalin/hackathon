@@ -10,9 +10,18 @@ def route_video():
 
 @app.route('/text',methods=["GET"])
 def route_text():
-   #TODO: Fetch url links from database
    url=get_articles()
    return url
+
+@app.route('/posts',methods=["POST","GET"])
+def route_posts():
+   if request.method=='GET':
+      posts=get_all_posts()
+      return posts
+   elif request.method=='POST':
+      text=request.form["text"]
+      posts=add_post(text)
+      return posts
 
 # @app.route("/signup",method=("POST"))
 # def route_signup():
