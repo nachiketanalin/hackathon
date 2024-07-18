@@ -31,6 +31,41 @@ def get_articles():
         return {"response":response},200
     except Exception as e:
          return {"error":str(e)},400
+    
+def get_all_posts():
+    try:
+        query = "SELECT * FROM POSTS"
+        ans_list= execute_query(query)
+        response=[{
+            "title":row[0],
+            "id":row[1],
+            "upvotes":row[2],
+            "downvotes":row[3]
+        } for row in ans_list]
+        return {"response":response},200
+    except Exception as e:
+         return {"error":str(e)},400
+
+def add_post(text):
+    try:
+        query=f"INSERT INTO POSTS VALUES({text},0,0)"
+        ans=execute_query(query)
+        return {""}
+    except Exception as e:
+        return {"error":str(e)},400
+
+    
+def get_articles():
+    try:
+        query = "SELECT * FROM ARTICLES"
+        ans_list= execute_query(query)
+        response=[{
+            "title":row[0],
+            "id":row[1]
+        } for row in ans_list]
+        return {"response":response},200
+    except Exception as e:
+         return {"error":str(e)},400
       
     
 def execute_query(query):
