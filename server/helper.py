@@ -26,7 +26,7 @@ def get_articles():
         ans_list= execute_query(query)
         response=[{
             "title":row[0],
-            "id":row[1]
+            "url":row[1]
         } for row in ans_list]
         return {"response":response},200
     except Exception as e:
@@ -37,8 +37,8 @@ def get_all_posts():
         query = "SELECT * FROM POSTS"
         ans_list= execute_query(query)
         response=[{
-            "title":row[0],
-            "id":row[1],
+            "id":row[0],
+            "content":row[1],
             "upvotes":row[2],
             "downvotes":row[3]
         } for row in ans_list]
@@ -48,9 +48,9 @@ def get_all_posts():
 
 def add_post(text):
     try:
-        query=f"INSERT INTO POSTS VALUES({text},0,0)"
+        query=f"INSERT INTO POSTS (CONTENT,UPVOTE,DOWNVOTE) VALUES({text},0,0)"
         ans=execute_query(query)
-        return {""}
+        return {"response":"Post added successfully"},200
     except Exception as e:
         return {"error":str(e)},400
 
