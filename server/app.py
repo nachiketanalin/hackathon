@@ -47,6 +47,13 @@ def route_replies():
       response=add_reply(text,comment_id)
       return response
 
+@app.route('/action',method=["POST"])
+def route_action():
+   action=request.form["action"]
+   item=request.form["item"]
+   id=request.form["id"]
+   response=add_action(action,item,id)
+   return response
 # @app.route("/signup",method=("POST"))
 # def route_signup():
 #    username=request.form["username"]

@@ -100,6 +100,24 @@ def add_reply(text,comment_id):
     except Exception as e:
         return {"error":str(e)},400
     
+def add_action(action,item,id):
+    try:
+        item=item.upper()
+        action=action.upper()
+        id_col=""
+        if item=="POSTS":
+            id_col="ID"
+        elif item=="COMMENTS":
+            id_col="COMMENT_ID"
+        elif item=="REPLIES":
+            id_col="REPLY_ID"
+            
+        query=f'''UPDATE {item} SET {action}={action}+1 where {id_col}={id}'''
+        ans=execute_query(query)
+        return {"response":"Action added successfully"},200
+    except Exception as e:
+        return {"error":str(e)},400
+    
 def execute_query(query):
       cnx = mysql.connector.connect(**config)
       cursor = cnx.cursor()
