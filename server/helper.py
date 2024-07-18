@@ -77,6 +77,28 @@ def add_comment(text,post_id):
     except Exception as e:
         return {"error":str(e)},400
       
+def get_all_replies(comment_id):
+    try:
+        query = f"SELECT * FROM REPLIES where COMMENT_ID={comment_id}"
+        ans_list= execute_query(query)
+        response=[{
+            "reply_id":row[0],
+            "comment_id":row[1],
+            "content":row[2],
+            "upvotes":row[3],
+            "downvotes":row[4]
+        } for row in ans_list]
+        return {"response":response},200
+    except Exception as e:
+         return {"error":str(e)},400
+
+def add_reply(text,comment_id):
+    try:
+        query=f'''INSERT INTO REPLIES (COMMENT_ID,CONTENT,UPVOTE,DOWNVOTE) VALUES({comment_id},"{text}",0,0)'''
+        ans=execute_query(query)
+        return {"response":"Reply added successfully"},200
+    except Exception as e:
+        return {"error":str(e)},400
     
 def execute_query(query):
       cnx = mysql.connector.connect(**config)

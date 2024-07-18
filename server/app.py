@@ -35,6 +35,18 @@ def route_comments():
       response=add_comment(text,post_id)
       return response
 
+@app.route('/replies',methods=["POST","GET"])
+def route_replies():
+   if request.method=='GET':
+      comment_id=request.args.get("comment_id")
+      replies=get_all_replies(comment_id)
+      return replies
+   elif request.method=='POST':
+      text=request.form["text"]
+      comment_id=request.form["comment_id"]
+      response=add_reply(text,comment_id)
+      return response
+
 # @app.route("/signup",method=("POST"))
 # def route_signup():
 #    username=request.form["username"]
