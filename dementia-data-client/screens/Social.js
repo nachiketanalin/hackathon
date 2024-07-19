@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Button, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Button, FlatList, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import CreatePostModal from './CreatePostModal';
 import PostDetailModal from './PostDetailModal';
 
@@ -108,7 +108,9 @@ const Social = () => {
   );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+      </View>
       <FlatList
         data={posts}
         renderItem={renderItem}
@@ -133,14 +135,25 @@ const Social = () => {
           onAddReply={handleAddReply}
         />
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
+    backgroundColor: '#001f3f', // Background color
+  },
+  header: {
+    backgroundColor: '#0074D9', // Header color
+    padding: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerText: {
+    color: '#fff',
+    fontSize: 20,
+    fontWeight: 'bold',
   },
   post: {
     padding: 15,
@@ -148,6 +161,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 5,
     marginBottom: 10,
+    backgroundColor: '#fff', // Background color for post cards
   },
   postTitle: {
     fontSize: 18,

@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, StyleSheet, Button, Linking } from 'react-native';
 import YoutubePlayer from 'react-native-youtube-iframe';
+import axios from 'axios'
+
+const API_ENDPOINT_URL = 'https://flask-app-service-x4rxrrxcfq-ey.a.run.app'
 
 // Dummy data (replace with data fetched from your backend)
 const dummyVideos = [
@@ -17,18 +20,54 @@ const Info = () => {
   const [videos, setVideos] = useState([]);
   const [articles, setArticles] = useState([]);
   const [showVideos, setShowVideos] = useState(false);
+  const [showArticles, setShowArticles] = useState(false); // New state for articles
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [playerReady, setPlayerReady] = useState(false); // Track if the player is ready
 
   useEffect(() => {
     // Replace with actual API calls to fetch videos and articles
-    setVideos(dummyVideos);
-    setArticles(dummyArticles);
+    fetchVideos();
+    fetchArticles();
   }, []);
+
+  const openLink = async (url) => {
+    try {
+      const supported = await Linking.canOpenURL(url);
+      if (supported) {
+        await Linking.openURL(url);
+      } else {
+        console.log("Don't know how to open URI: " + url);
+      }
+    } catch (error) {
+      console.error('An error occurred', error);
+    }
+  };
+  
+
+  const fetchVideos = async () => {
+    const response = await axios(`${API_ENDPOINT_URL}/video`);
+    setVideos(response.data.response)
+  };
+  const fetchArticles = async () => {
+    const response = await axios(`${API_ENDPOINT_URL}/text`);
+    setArticles(response.data.response)
+  };
 
   const toggleVideos = () => {
     setShowVideos(!showVideos);
+    if (!showVideos) {
+      setShowArticles(false);
+    }
   };
+  
+  const toggleArticles = () => {
+    setShowArticles(!showArticles);
+    if (!showArticles) {
+      closeVideo();
+      setShowVideos(false);
+    }
+  };
+  
 
   const playVideo = (videoId) => {
     setSelectedVideo(videoId);
@@ -50,13 +89,17 @@ const Info = () => {
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.sectionHeader} onPress={toggleVideos}>
-        <Text style={styles.sectionTitle}>Videos</Text>
-      </TouchableOpacity>
+  <View style={styles.sectionHeaderContent}>
+    <Text style={styles.sectionTitle}>Videos</Text>
+    <Text style={styles.toggleIcon}>{showVideos ? '-' : '+'}</Text>
+  </View>
+</TouchableOpacity>
+
       {showVideos && (
         <FlatList
           data={videos}
           renderItem={({ item }) => (
-            <TouchableOpacity style={styles.itemContainer} onPress={() => playVideo(item.videoId)}>
+            <TouchableOpacity style={styles.itemContainer} onPress={() => playVideo(item.id)}>
               <Text style={styles.itemText}>{item.title}</Text>
             </TouchableOpacity>
           )}
@@ -75,21 +118,27 @@ const Info = () => {
             onError={(error) => console.error('Error:', error)}
           />
           <TouchableOpacity style={styles.closeButton} onPress={closeVideo}>
-            <Text style={styles.closeButtonText}>Close Video</Text>
+            <Text style={styles.closeButtonText}>X</Text>
           </TouchableOpacity>
         </View>
       )}
 
-      <TouchableOpacity style={styles.sectionHeader} onPress={toggleVideos}>
-        <Text style={styles.sectionTitle}>Articles</Text>
-      </TouchableOpacity>
-      {!showVideos && (
+<TouchableOpacity style={styles.sectionHeader} onPress={toggleArticles}>
+  <View style={styles.sectionHeaderContent}>
+    <Text style={styles.sectionTitle}>Articles</Text>
+    <Text style={styles.toggleIcon}>{showArticles ? '-' : '+'}</Text>
+  </View>
+</TouchableOpacity>
+      {showArticles && (
         <FlatList
           data={articles}
           renderItem={({ item }) => (
             <View style={styles.itemContainer}>
-              <Text style={styles.itemText}>{item.title}</Text>
-              <Text>{item.content}</Text>
+              <Button
+                key={item.id}
+                title={item.title}
+                onPress={() => openLink(item.url)}
+              />
             </View>
           )}
           keyExtractor={(item) => item.id}
@@ -104,17 +153,33 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#001f3f', // Dark blue background
   },
   sectionHeader: {
-    backgroundColor: '#e0e0e0',
-    paddingVertical: 10,
-    paddingHorizontal: 15,
+    backgroundColor: '#0074D9', // Lighter dark blue for section headers
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8, // Rounded corners
     marginBottom: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  sectionHeaderContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: '#ffffff', // White text for better contrast
+  },
+  toggleIcon: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#ffffff', // White text for better contrast
   },
   listContainer: {
     flexGrow: 1,
@@ -124,18 +189,24 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 15,
     marginBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3, // Add elevation for Android shadow
   },
   itemText: {
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 5,
+    color: '#001f3f', // Dark blue text color
   },
   // videoPlayer: {
   //   backgroundColor: '#000000',
   //   alignItems: 'center',
   //   justifyContent: 'center',
   //   position: 'relative',
-  //   paddingBottom: 10, // Add padding to prevent overlap with close button
+  //   paddingVertical: 20, // Add padding to prevent overlap with close button
   // },
   closeButton: {
     position: 'absolute',
@@ -143,120 +214,17 @@ const styles = StyleSheet.create({
     right: 10,
     backgroundColor: 'rgba(255, 255, 255, 0.8)', // Semi-transparent white background
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 50, // Circular button
+    elevation: 5, // Add elevation for Android shadow
   },
   closeButtonText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
-    color: '#000000',
+    color: '#0074D9', // Lighter dark blue for text
   },
 });
 
+
+
+
 export default Info;
-
-
-
-
-
-
-// const Info = () => {
-//   const [videos, setVideos] = useState([]);
-//   const [articles, setArticles] = useState([]);
-//   const [showVideos, setShowVideos] = useState(false);
-//   const [selectedVideo, setSelectedVideo] = useState(null);
-//   const [expandedSection, setExpandedSection] = useState(null);
-
-//   useEffect(()=>{
-//     fetchData();
-//   }, []);
-
-//   const fetchData = async() => {
-//     try {
-//       const v_response = await axios.get('http://127.0.0.1:5000/video');
-//       // const v_data = await v_response.json();
-//       // console.log(v_data.response);
-//       // console.log(v_response.data.response);
-//       // setVideos(v_response.data.response);
-//       setVideos(dummyVideos);
-//       // const a_response = await fetch('http://127.0.0.1:5000/text');
-//       // const a_data = await a_response.json();
-//       const a_response = await axios.get('http://127.0.0.1:5000/text');
-//       setArticles(a_response.data.response);
-//     } catch (error) {
-//       console.error('Error fetching data: ', error);
-//     }
-//   }
-
-//   const toggleSection = (section) => {
-//     if (expandedSection === section) {
-//       setExpandedSection(null);
-//     } else {
-//       setExpandedSection(section);
-//     }
-//   };
-
-//   const openLink = (url) => {
-//     Linking.openURL(url);
-//   };
-
-//   return (
-//     <View style={styles.container}>
-//       <TouchableOpacity onPress={() => toggleSection('videos')}>
-//         <Text style={styles.sectionTitle}>Videos</Text>
-//       </TouchableOpacity>
-//       {expandedSection === 'videos' && (
-//         <View>
-//           {videos.map((video, index) => (
-//             <YoutubePlayer 
-//               key={index}
-//               height={300}
-//               play={false}
-//               videoId={video.videoId}
-//             />
-//           ))}
-//         </View>
-//       )}
-
-//       <TouchableOpacity onPress={() => toggleSection('articles')}>
-//         <Text style={styles.sectionTitle}>Articles</Text>
-//       </TouchableOpacity>
-//       {expandedSection === 'articles' && (
-//         <View>
-//         {articles.map((article, index) => (
-//           <TouchableOpacity
-//             key={`video_${index}`}
-//             style={styles.itemContainer}
-//             onPress={() => openLink(article)}
-//           >
-//             <Text style={styles.itemTitle}>{article}</Text>
-//           </TouchableOpacity>
-//         ))}
-//       </View>
-//       )}
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     padding: 20,
-//   },
-//   sectionTitle: {
-//     fontSize: 20,
-//     marginBottom: 10,
-//   },
-//   itemContainer: {
-//     marginBottom: 20,
-//     backgroundColor: '#f0f0f0',
-//     padding: 10,
-//     borderRadius: 5,
-//   },
-//   itemTitle: {
-//     fontSize: 18,
-//     fontWeight: 'bold',
-//   },
-// });
-
-// export default Info;
-
