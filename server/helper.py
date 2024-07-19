@@ -1,4 +1,6 @@
 import mysql.connector
+from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
+
 config = {
     'user': 'dataworld_user',
     'password': 'dataworld@123',
@@ -6,6 +8,11 @@ config = {
     'database': 'dataworld_dataset',
     'raise_on_warnings': True
 }
+
+model_name = "unitary/toxic-bert"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForSequenceClassification.from_pretrained(model_name)
+toxicity_pipeline = pipeline("text-classification", model=model, tokenizer=tokenizer)
 
 def get_links():
     try:
@@ -48,6 +55,7 @@ def get_all_posts():
 
 def add_post(text):
     try:
+        is_socially_acceptable(text)
         query=f'''INSERT INTO POSTS (CONTENT,UPVOTE,DOWNVOTE) VALUES("{text}",0,0)'''
         ans=execute_query(query)
         return {"response":"Post added successfully"},200
@@ -71,6 +79,7 @@ def get_all_comments(post_id):
 
 def add_comment(text,post_id):
     try:
+        is_socially_acceptable(text)
         query=f'''INSERT INTO COMMENTS (POST_ID,CONTENT,UPVOTE,DOWNVOTE) VALUES({post_id},"{text}",0,0)'''
         ans=execute_query(query)
         return {"response":"Comment added successfully"},200
@@ -94,6 +103,7 @@ def get_all_replies(comment_id):
 
 def add_reply(text,comment_id):
     try:
+        is_socially_acceptable(text)
         query=f'''INSERT INTO REPLIES (COMMENT_ID,CONTENT,UPVOTE,DOWNVOTE) VALUES({comment_id},"{text}",0,0)'''
         ans=execute_query(query)
         return {"response":"Reply added successfully"},200
@@ -127,3 +137,11 @@ def execute_query(query):
       cursor.close()
       cnx.close()
       return row_list
+
+def is_socially_acceptable(text):
+    result = toxicity_pipeline(text)
+    print(result)
+    for label in result:
+        if label['label'] in ["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"] and label['score'] > 0.5:
+            raise Exception(" Text is against community guidelines")
+    return True
