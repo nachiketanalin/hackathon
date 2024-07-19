@@ -156,9 +156,55 @@ def check_user(username,pwd):
         return {"error":"No such user exists"},400
     except Exception as e:
         return {"error":str(e)},400
-        
 
-def execute_query(query):
+def get_alerts(id):
+    try:
+        query=f'''SELECT * FROM ALERTS WHERE USER_ID="{id}"'''
+        ans_list=execute_query(query)
+        response=[{
+            "id":row[0],
+            "user_id":row[1],
+            "task":row[2],
+            "type":row[3],
+            "task_time":row[4]
+        } for row in ans_list]
+        return {"response":response},200
+    except Exception as e:
+        return {"error":str(e)},400
+    
+
+def add_alert(user_id,task,task_time,type):
+    try:
+        query=f'''SELECT COUNT (*) FROM ALERTS WHERE USER_ID="{user_id}" AND TASK="{task}" AND TYPE="{type}" AND TASK_TIME="{task_time}"'''
+        ans=execute_query(query)
+        count=ans[0][0]
+        if count>0:
+            return {"error":"Alert already exists"},400
+        query=f'''INSERT INTO ALERTS (USER_ID, TASK, TYPE, TASK_TIME) VALUES ("{user_id}","{task}","{type}","{task_time}")'''
+        ans=execute_query(query)
+        return {"response":"Alert added successfully"},200
+    except Exception as e:
+        return {"error":str(e)},400
+    
+def delete_alert(alert_id):
+    try:
+        query=f''' DELETE FROM ALERTS WHERE ID="{alert_id}"'''
+        ans=execute_query(query)
+        return{"response":"Alert deleted succesfully"},200
+    except Exception as e:
+        return {"error":str(e)},400
+    
+
+def modify_alert(alert_id,task,type,task_time):
+    try:
+        query=f''' UPDATE ALERTS SET TASK="{task}", TYPE="{type}", TASK_TIME="{task_time}" WHERE ID="{alert_id}"'''
+        ans=execute_query(query)
+        return{"response":"Alert deleted succesfully"},200
+    except Exception as e:
+        return {"error":str(e)},400
+    
+
+def execute_query(query): 
       cnx = mysql.connector.connect(**config)
       cursor = cnx.cursor()
       query = query

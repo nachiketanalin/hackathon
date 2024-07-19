@@ -72,9 +72,31 @@ def route_login():
        return "Login successful!",200
     return "User does not exist",400
 
-@app.route("/alerts",methods=["POST","GET","DELETE"])
+@app.route("/alerts",methods=["POST","GET","DELETE","PUT"])
 def route_alert():
-   pass
+   if request.method=="GET":
+      user_id=request.args.get("user_id")
+      response=get_alerts(user_id)
+      return response
+   elif request.method=="POST":
+      user_id=request.form["user_id"]
+      task=request.form["task"]
+      task_time=request.form["task_time"]
+      type=request.form["type"]
+      response=add_alert(user_id,task,task_time,type)
+      return response
+   elif request.method=="DELETE":
+      data=request.json
+      alert_id=data.get("alert_id")
+      response=delete_alert(alert_id)
+   elif request.method=="PUT":
+      data=request.json
+      alert_id=data.get("alert_id")
+      task=data.get("task")
+      type=data.get("type")
+      task_time=data.get("task_time")
+      response=modify_alert(alert_id,task,type,task_time)
+
 
 # @app.route("/chatbot",methods=("POST"))
 # def route_chatbot():
