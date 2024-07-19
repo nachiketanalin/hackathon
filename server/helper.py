@@ -18,7 +18,7 @@ toxicity_pipeline = pipeline("text-classification", model=model, tokenizer=token
 def get_links():
     try:
         query = "SELECT * FROM VIDEOS"
-        ans_list= execute_query(query)
+        ans_list= execute_query(query,'r')
         response=[{
             "title":row[0],
             "id":row[1]
@@ -31,7 +31,7 @@ def get_links():
 def get_articles():
     try:
         query = "SELECT * FROM ARTICLES"
-        ans_list= execute_query(query)
+        ans_list= execute_query(query,'r')
         response=[{
             "title":row[0],
             "url":row[1]
@@ -43,7 +43,7 @@ def get_articles():
 def get_all_posts():
     try:
         query = "SELECT * FROM POSTS"
-        ans_list= execute_query(query)
+        ans_list= execute_query(query,'r')
         response=[{
             "id":row[0],
             "content":row[1],
@@ -60,7 +60,7 @@ def add_post(text,title):
         is_socially_acceptable(text)
         is_socially_acceptable(title)
         query=f'''INSERT INTO POSTS (CONTENT,UPVOTE,DOWNVOTE,TITLE) VALUES("{text}",0,0,"{title}")'''
-        ans=execute_query(query)
+        ans=execute_query(query,'w')
         return {"response":"Post added successfully"},200
     except Exception as e:
         return {"error":str(e)},400
@@ -68,7 +68,7 @@ def add_post(text,title):
 def get_all_comments(post_id):
     try:
         query = f"SELECT * FROM COMMENTS where POST_ID={post_id}"
-        ans_list= execute_query(query)
+        ans_list= execute_query(query,'r')
         response=[{
             "comment_id":row[0],
             "post_id":row[1],
@@ -84,7 +84,7 @@ def add_comment(text,post_id):
     try:
         is_socially_acceptable(text)
         query=f'''INSERT INTO COMMENTS (POST_ID,CONTENT,UPVOTE,DOWNVOTE) VALUES({post_id},"{text}",0,0)'''
-        ans=execute_query(query)
+        ans=execute_query(query,'w')
         return {"response":"Comment added successfully"},200
     except Exception as e:
         return {"error":str(e)},400
@@ -92,7 +92,7 @@ def add_comment(text,post_id):
 def get_all_replies(comment_id):
     try:
         query = f"SELECT * FROM REPLIES where COMMENT_ID={comment_id}"
-        ans_list= execute_query(query)
+        ans_list= execute_query(query,'r')
         response=[{
             "reply_id":row[0],
             "comment_id":row[1],
@@ -108,7 +108,7 @@ def add_reply(text,comment_id):
     try:
         is_socially_acceptable(text)
         query=f'''INSERT INTO REPLIES (COMMENT_ID,CONTENT,UPVOTE,DOWNVOTE) VALUES({comment_id},"{text}",0,0)'''
-        ans=execute_query(query)
+        ans=execute_query(query,'w')
         return {"response":"Reply added successfully"},200
     except Exception as e:
         return {"error":str(e)},400
@@ -126,7 +126,7 @@ def add_action(action,item,id):
             id_col="REPLY_ID"
             
         query=f'''UPDATE {item} SET {action}={action}+1 where {id_col}={id}'''
-        ans=execute_query(query)
+        ans=execute_query(query,'w')
         
         return {"response":"Action added successfully"},200
     except Exception as e:
@@ -137,13 +137,13 @@ def add_user(username,pwd1,pwd2):
         return {"error":"Passwords are not matching"},400
     try:
         query=f'''select count(*) from USERS where NAME="{username}"'''
-        ans=execute_query(query)
+        ans=execute_query(query,'r')
         count=ans[0][0]
         if count>0:
             return{"error":"User already exists"},400
         
         query=f'''INSERT INTO USERS( NAME, PWD) values("{username}","{pwd1}")'''
-        ans=execute_query(query)
+        ans=execute_query(query,'w')
         return {"response":"User created successfully"},200
     
     except Exception as e:
@@ -152,7 +152,7 @@ def add_user(username,pwd1,pwd2):
 def check_user(username,pwd):
     try:
         query=f'''select count(*) from USER where NAME="{username}" and PWD="{pwd}"'''
-        ans=execute_query(query)
+        ans=execute_query(query,'r')
         count=ans[0][0]
         if count>0:
             return {"response":"Login successful"},200
@@ -163,7 +163,7 @@ def check_user(username,pwd):
 def get_alerts(id):
     try:
         query=f'''SELECT * FROM ALERTS WHERE USER_ID="{id}"'''
-        ans_list=execute_query(query)
+        ans_list=execute_query(query,'r')
         response=[{
             "id":row[0],
             "user_id":row[1],
@@ -179,12 +179,12 @@ def get_alerts(id):
 def add_alert(user_id,task,task_time,type):
     try:
         query=f'''SELECT COUNT (*) FROM ALERTS WHERE USER_ID="{user_id}" AND TASK="{task}" AND TYPE="{type}" AND TASK_TIME="{task_time}"'''
-        ans=execute_query(query)
+        ans=execute_query(query,'r')
         count=ans[0][0]
         if count>0:
             return {"error":"Alert already exists"},400
         query=f'''INSERT INTO ALERTS (USER_ID, TASK, TYPE, TASK_TIME) VALUES ("{user_id}","{task}","{type}","{task_time}")'''
-        ans=execute_query(query)
+        ans=execute_query(query,'w')
         return {"response":"Alert added successfully"},200
     except Exception as e:
         return {"error":str(e)},400
@@ -192,7 +192,7 @@ def add_alert(user_id,task,task_time,type):
 def delete_alert(alert_id):
     try:
         query=f''' DELETE FROM ALERTS WHERE ID="{alert_id}"'''
-        ans=execute_query(query)
+        ans=execute_query(query,'w')
         return{"response":"Alert deleted succesfully"},200
     except Exception as e:
         return {"error":str(e)},400
@@ -201,27 +201,28 @@ def delete_alert(alert_id):
 def modify_alert(alert_id,task,type,task_time):
     try:
         query=f''' UPDATE ALERTS SET TASK="{task}", TYPE="{type}", TASK_TIME="{task_time}" WHERE ID="{alert_id}"'''
-        ans=execute_query(query)
+        ans=execute_query(query,'w')
         return{"response":"Alert deleted succesfully"},200
     except Exception as e:
         return {"error":str(e)},400
     
 
-def execute_query(query): 
+def execute_query(query,mode): 
       cnx = mysql.connector.connect(**config)
       cursor = cnx.cursor()
       query = query
       cursor.execute(query)
       row_list=[row for row in cursor.fetchall()]
       cursor.close()
-      cnx.commit()
+      if mode=='w':
+        cnx.commit()
       cnx.close()
       return row_list
 
 def get_tips():
     try:
         query = "SELECT * FROM TIPS"
-        ans_list= execute_query(query)
+        ans_list= execute_query(query,'r')
         tip_list=[row[0] for row in ans_list]
         tip=random.choice(tip_list)
         return {"response":tip},200
