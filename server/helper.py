@@ -217,7 +217,7 @@ def execute_query(query):
 
 def get_tips():
     try:
-        query = "SELECT * FROM tips"
+        query = "SELECT * FROM TIPS"
         ans_list= execute_query(query)
         tip_list=[row[0] for row in ans_list]
         tip=random.choice(tip_list)

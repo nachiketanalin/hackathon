@@ -47,7 +47,7 @@ def route_replies():
       response=add_reply(text,comment_id)
       return response
 
-@app.route('/action',method=["POST"])
+@app.route('/action',methods=["POST"])
 def route_action():
    action=request.form["action"]
    item=request.form["item"]
