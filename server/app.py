@@ -19,8 +19,9 @@ def route_posts():
       posts=get_all_posts()
       return posts
    elif request.method=='POST':
-      text=request.form["text"]
-      title=request.form["title"]
+      data=request.json
+      text=data["text"]
+      title=data["title"]
       response=add_post(text,title)
       return response
 
@@ -31,8 +32,9 @@ def route_comments():
       comments=get_all_comments(post_id)
       return comments
    elif request.method=='POST':
-      text=request.form["text"]
-      post_id=request.form["post_id"]
+      data=request.json
+      text=data["text"]
+      post_id=data["post_id"]
       response=add_comment(text,post_id)
       return response
 
@@ -43,8 +45,9 @@ def route_replies():
       replies=get_all_replies(comment_id)
       return replies
    elif request.method=='POST':
-      text=request.form["text"]
-      comment_id=request.form["comment_id"]
+      data=request.json
+      text=data["text"]
+      comment_id=data["comment_id"]
       response=add_reply(text,comment_id)
       return response
 
@@ -59,9 +62,10 @@ def route_action():
 
 @app.route("/signup",methods=["POST"])
 def route_signup():
-   username=request.form["username"]
-   pwd1=request.form["pwd1"]
-   pwd2=request.form["pwd2"]
+   data=request.json
+   username=data["username"]
+   pwd1=data["pwd1"]
+   pwd2=data["pwd2"]
    response=add_user(username,pwd1,pwd2)
    return response
 
@@ -81,10 +85,11 @@ def route_alert():
       response=get_alerts(user_id)
       return response
    elif request.method=="POST":
-      user_id=request.form["user_id"]
-      task=request.form["task"]
-      task_time=request.form["task_time"]
-      type=request.form["type"]
+      data=request.json
+      user_id=data["user_id"]
+      task=data["task"]
+      task_time=data["task_time"]
+      type=data["type"]
       response=add_alert(user_id,task,task_time,type)
       return response
    elif request.method=="DELETE":
