@@ -55,7 +55,7 @@ def route_action():
    response=add_action(action,item,id)
    return response
 
-@app.route("/signup",method=("POST"))
+@app.route("/signup",methods=["POST"])
 def route_signup():
    username=request.form["username"]
    pwd1=request.form["pwd1"]
@@ -63,7 +63,7 @@ def route_signup():
    response=add_user(username,pwd1,pwd2)
    return response
 
-@app.route("/login",methods=("GET"))
+@app.route("/login",methods=["GET"])
 def route_login():
     username=request.args.get["username"]
     pwd=request.args.get["pwd"]
@@ -72,21 +72,9 @@ def route_login():
        return "Login successful!",200
     return "User does not exist",400
 
-# @app.route("/social",methods=("POST,GET"))
-# def route_social():
-#    if request.method=='GET':
-#         #TODO: get all posts from database
-#         social_dict={}
-#         return social_dict,200
-#    else:
-#         post=request.form["post"]
-#         comments=request.form["comments"]
-#         if not comments:
-#             #TODO: Create new post
-#             return "Post created",200
-#         else:
-#             #TODO: Add comment to existing post
-#             return "Comment added",200
+@app.route("/alerts",methods=["POST","GET","DELETE"])
+def route_alert():
+   pass
 
 # @app.route("/chatbot",methods=("POST"))
 # def route_chatbot():
