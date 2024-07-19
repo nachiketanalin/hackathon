@@ -124,10 +124,40 @@ def add_action(action,item,id):
             
         query=f'''UPDATE {item} SET {action}={action}+1 where {id_col}={id}'''
         ans=execute_query(query)
+        
         return {"response":"Action added successfully"},200
     except Exception as e:
         return {"error":str(e)},400
+
+def add_user(username,pwd1,pwd2):
+    if pwd1!=pwd2:
+        return {"error":"Passwords are not matching"},400
+    try:
+        query=f'''select count(*) from USERS where NAME="{username}"'''
+        ans=execute_query(query)
+        count=ans[0][0]
+        if count>0:
+            return{"error":"User already exists"},400
+        
+        query=f'''INSERT INTO USERS( NAME, PWD) values("{username}","{pwd1}")'''
+        ans=execute_query(query)
+        return {"response":"User created successfully"},200
     
+    except Exception as e:
+        return {"error":str(e)},400
+    
+def check_user(username,pwd):
+    try:
+        query=f'''select count(*) from USER where NAME="{username}" and PWD="{pwd}"'''
+        ans=execute_query(query)
+        count=ans[0][0]
+        if count>0:
+            return {"response":"Login successful"},200
+        return {"error":"No such user exists"},400
+    except Exception as e:
+        return {"error":str(e)},400
+        
+
 def execute_query(query):
       cnx = mysql.connector.connect(**config)
       cursor = cnx.cursor()

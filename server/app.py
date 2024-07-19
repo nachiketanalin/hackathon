@@ -55,24 +55,22 @@ def route_action():
    response=add_action(action,item,id)
    return response
 
-# @app.route("/signup",method=("POST"))
-# def route_signup():
-#    username=request.form["username"]
-#    pwd1=request.form["pwd1"]
-#    pwd2=request.form["pwd2"]
-#    if pwd1!=pwd2:
-#       return "Passwords not matching!",400
-#    #TODO: Insert uname,pwd in database
-#    return "Sign up successful!",200
+@app.route("/signup",method=("POST"))
+def route_signup():
+   username=request.form["username"]
+   pwd1=request.form["pwd1"]
+   pwd2=request.form["pwd2"]
+   response=add_user(username,pwd1,pwd2)
+   return response
 
-# @app.route("/login",methods=("POST"))
-# def route_login():
-#     username=request.form["username"]
-#     pwd=request.form["pwd"]
-#     user_exists=True#TODO: Validate credentials
-#     if user_exists:
-#        return "Login successful!",200
-#     return "User does not exist",400
+@app.route("/login",methods=("GET"))
+def route_login():
+    username=request.args.get["username"]
+    pwd=request.args.get["pwd"]
+    user_exists=check_user(username,pwd)
+    if user_exists:
+       return "Login successful!",200
+    return "User does not exist",400
 
 # @app.route("/social",methods=("POST,GET"))
 # def route_social():
