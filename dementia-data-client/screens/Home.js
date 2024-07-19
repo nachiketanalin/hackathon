@@ -29,7 +29,7 @@ const Home = () => {
   return (
     <View style={styles.container}>
       <Image 
-        source={require('../assets/logo.png')} 
+        source={require('../assets/Logo.png')} 
         style={styles.logo} 
         resizeMode='contain' // Ensure the logo scales properly without getting cut off
       />

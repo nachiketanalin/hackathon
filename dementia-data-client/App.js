@@ -8,7 +8,6 @@ import Social from './screens/Social';
 import Alert from './screens/Alert';
 import ProximityAlarm from './screens/ProximityAlarm';
 import { Ionicons } from '@expo/vector-icons';
-import ProximityAlarm from './screens/ProximityAlarm';
 
 const Tab = createBottomTabNavigator();
 
