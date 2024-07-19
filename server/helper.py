@@ -214,6 +214,7 @@ def execute_query(query):
       cursor.execute(query)
       row_list=[row for row in cursor.fetchall()]
       cursor.close()
+      cnx.commit()
       cnx.close()
       return row_list
 
