@@ -4,10 +4,9 @@ import MapView, { Marker, Polyline } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { Audio } from 'expo-av';
 
-// Predefined location in Pune
 const predefinedLocation = {
-  latitude: 18.5931152,
-  longitude: 73.760587,
+  latitude: 37.79571379442852,
+  longitude: -122.39357068465881,
 };
 
 function ProximityAlarm() {
@@ -105,7 +104,7 @@ function ProximityAlarm() {
     setLocation(newLocation);
 
     if (isTrackingEnabled) {
-      if (newDistance > 30) { // Adjusted to 30 meters
+      if (newDistance > 10) { // Adjusted to 30 meters
         if (!isOutOfRange) {
           setIsOutOfRange(true);
           playAlarm();
