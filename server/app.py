@@ -2,6 +2,9 @@ from flask import Flask, request
 from helper import *
 app = Flask(__name__)
 
+@app.route('/',methods=["GET"])
+def route_home():
+   return "Hello data-world",200
 
 @app.route('/video',methods=["GET"])
 def route_video():
