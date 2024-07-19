@@ -50,9 +50,10 @@ def route_replies():
 
 @app.route('/action',methods=["POST"])
 def route_action():
-   action=request.form["action"]
-   item=request.form["item"]
-   id=request.form["id"]
+   data=request.json()
+   action=data["action"]
+   item=data["item"]
+   id=data["id"]
    response=add_action(action,item,id)
    return response
 
