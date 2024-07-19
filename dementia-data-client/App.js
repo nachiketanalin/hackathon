@@ -6,6 +6,7 @@ import Info from './screens/Info';
 import AINurse from './screens/AINurse';
 import Social from './screens/Social';
 import Alert from './screens/Alert';
+import ProximityAlarm from './screens/ProximityAlarm';
 import { Ionicons } from '@expo/vector-icons';
 
 const Tab = createBottomTabNavigator();
@@ -19,15 +20,15 @@ function App() {
             let iconName;
 
             if (route.name === 'Info') {
-              iconName = focused
-                ? 'bookmark'
-                : 'bookmark-outline';
+              iconName = focused ? 'bookmark' : 'bookmark-outline';
             } else if (route.name === 'AINurse') {
               iconName = focused ? 'medkit' : 'medkit-outline';
             } else if (route.name === 'Social') {
               iconName = focused ? 'people' : 'people-outline';
-            } else if (route.name == 'Alert') {
+            } else if (route.name === 'Alert') {
               iconName = focused ? 'alarm' : 'alarm-outline';
+            } else if (route.name === 'ProximityAlarm') {
+              iconName = focused ? 'location' : 'location-outline';
             }
 
             // You can return any component that you like here!
@@ -40,12 +41,11 @@ function App() {
         <Tab.Screen name="Info" component={Info} />
         <Tab.Screen name="AINurse" component={AINurse} />
         <Tab.Screen name="Social" component={Social} />
-        <Tab.Screen name="Alert" component={Alert}/>
+        <Tab.Screen name="Alert" component={Alert} />
+        <Tab.Screen name="ProximityAlarm" component={ProximityAlarm} />
       </Tab.Navigator>
     </NavigationContainer>
   );
 }
 
 export default App;
-
-
