@@ -6,6 +6,7 @@ import Info from './screens/Info';
 import AINurse from './screens/AINurse';
 import Social from './screens/Social';
 import Alert from './screens/Alert';
+import ProximityAlarm from './screens/ProximityAlarm';
 import { Ionicons } from '@expo/vector-icons';
 import ProximityAlarm from './screens/ProximityAlarm';
 
