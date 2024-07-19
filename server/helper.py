@@ -1,4 +1,5 @@
 import mysql.connector
+import random
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
 
 config = {
@@ -213,6 +214,16 @@ def execute_query(query):
       cursor.close()
       cnx.close()
       return row_list
+
+def get_tips():
+    try:
+        query = "SELECT * FROM tips"
+        ans_list= execute_query(query)
+        tip_list=[row[0] for row in ans_list]
+        tip=random.choice(tip_list)
+        return {"response":tip},200
+    except Exception as e:
+         return {"error":str(e)},400
 
 def is_socially_acceptable(text):
     result = toxicity_pipeline(text)

@@ -98,12 +98,10 @@ def route_alert():
       response=modify_alert(alert_id,task,type,task_time)
 
 
-# @app.route("/chatbot",methods=("POST"))
-# def route_chatbot():
-#     query=request.form["query"]
-#     #TODO: Get response from gemini
-#     answer=""
-#     return answer,200
+@app.route('/tips',methods=["GET"])
+def route_tips():
+   response=get_tips()
+   return response
 
 
 
