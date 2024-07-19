@@ -50,7 +50,7 @@ def route_replies():
 
 @app.route('/action',methods=["POST"])
 def route_action():
-   data=request.json()
+   data=request.json
    action=data["action"]
    item=data["item"]
    id=data["id"]
