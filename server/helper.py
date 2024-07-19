@@ -48,16 +48,18 @@ def get_all_posts():
             "id":row[0],
             "content":row[1],
             "upvotes":row[2],
-            "downvotes":row[3]
+            "downvotes":row[3],
+            "title":row[4]
         } for row in ans_list]
         return {"response":response},200
     except Exception as e:
          return {"error":str(e)},400
 
-def add_post(text):
+def add_post(text,title):
     try:
         is_socially_acceptable(text)
-        query=f'''INSERT INTO POSTS (CONTENT,UPVOTE,DOWNVOTE) VALUES("{text}",0,0)'''
+        is_socially_acceptable(title)
+        query=f'''INSERT INTO POSTS (CONTENT,UPVOTE,DOWNVOTE,TITLE) VALUES("{text}",0,0,"{title}")'''
         ans=execute_query(query)
         return {"response":"Post added successfully"},200
     except Exception as e:

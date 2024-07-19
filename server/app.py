@@ -20,7 +20,8 @@ def route_posts():
       return posts
    elif request.method=='POST':
       text=request.form["text"]
-      response=add_post(text)
+      title=request.form["title"]
+      response=add_post(text,title)
       return response
 
 @app.route('/comments',methods=["POST","GET"])
